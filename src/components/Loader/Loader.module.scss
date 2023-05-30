@@ -1,0 +1,48 @@
+.loader_wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.icon {
+    width: 130px;
+    margin-bottom: -30px;
+}
+
+.loader {
+    height: 100px;
+    display: block;
+
+    .path4 {
+        animation: elastic 2s ease-in infinite;
+    }
+}
+
+@keyframes elastic {
+    0% {
+        width: 6%;
+        transform: translate(0, 0);
+    }
+
+    25% {
+        width: 50%;
+        transform: translate(40px, 0);
+    }
+
+    50% {
+        width: 6%;
+        transform: translate(92px, 0);
+    }
+
+    75% {
+        width: 50%;
+        transform: translate(40px, 0);
+    }
+
+    100% {
+        width: 6%;
+        transform: translate(0, 0);
+    }
+}
