@@ -2,6 +2,9 @@
 
 :root {
   --color-primary: #00b96b;
+  --color-grey: #F9FBFC;
+  --color-light: #fff;
+  --color-grey-dark-3: #999;
 }
 
 * {
