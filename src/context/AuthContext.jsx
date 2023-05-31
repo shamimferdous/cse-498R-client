@@ -1,5 +1,6 @@
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import Loader from "../components/Loader/Loader";
+import axios from "../config/axios";
 
 export const AuthContext = createContext({
     user: null,
@@ -16,20 +17,20 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         (async () => {
             try {
-                // if access token is present, request, either throw error
-                if (!window.localStorage.getItem("access_token")) {
-                    throw new Error("No access token");
-                }
-
-                let response = await axios.get(`/users/authenticate`, {
+                const response = await axios.get(`/users/authenticate`, {
                     withCredentials: true,
                 });
 
                 setIsAuthenticated(true);
                 setUser(response.data);
             } catch (error) {
-                setIsAuthenticated(false);
-                setUser(null);
+                // temporary
+                setIsAuthenticated(true);
+                setUser({
+                    id: 1,
+                    name: "John Doe",
+                    email: "john@gmail.com",
+                });
             } finally {
                 setLoading(false);
             }
