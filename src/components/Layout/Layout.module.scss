@@ -1,0 +1,13 @@
+.link {
+    text-decoration: none;
+    font-weight: 600;
+    color: black;
+
+    &:hover {
+        color: black;
+    }
+}
+
+.active_link {
+    color: #007bff;
+}

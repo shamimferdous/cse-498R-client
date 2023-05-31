@@ -9,6 +9,8 @@ import Login from "./views/Login/Login.jsx";
 import Products from "./views/Products/Products.jsx";
 import CreateProduct from "./views/CreateProduct/CreateProduct.jsx";
 import EditProduct from "./views/EditProduct/EditProduct.jsx";
+import CreateBatch from "./views/CreateBatch/CreateBatch.jsx";
+import Batches from "./views/Batches/Batches.jsx";
 
 // create browser router and components here
 const router = createBrowserRouter([
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
             {
                 path: "/edit-product/:id",
                 element: <EditProduct />,
+            },
+            {
+                path: "/create-batch/:id",
+                element: <CreateBatch />,
+            },
+            {
+                path: "/batches/",
+                element: <Batches />,
             },
         ],
     },

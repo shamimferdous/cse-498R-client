@@ -1,7 +1,9 @@
 import { Card } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import styles from "./Layout.module.scss";
 
 const Layout = ({ children }) => {
+    const location = useLocation();
     return (
         <div className="container">
             <div className="row">
@@ -18,12 +20,28 @@ const Layout = ({ children }) => {
                             <img src="/logo.png" alt="logo" height={35} />
                             <ul className="list-inline mb-0 d-flex gap-3">
                                 <li className="list-inline-item">
-                                    <Link to="/" className="text-decoration-none fw-bold">
+                                    <Link
+                                        to="/"
+                                        className={`${styles.link} ${
+                                            ["/", "/create-product"].includes(location.pathname) ||
+                                            location.pathname.match(/^\/edit-product\/\d+$/)
+                                                ? styles.active_link
+                                                : ""
+                                        }`}
+                                    >
                                         Products
                                     </Link>
                                 </li>
                                 <li className="list-inline-item">
-                                    <Link to="/batches" className="text-decoration-none fw-bold">
+                                    <Link
+                                        to="/batches"
+                                        className={`${styles.link} ${
+                                            location.pathname === "/batches" ||
+                                            location.pathname.match(/^\/create-batch\/\d+$/)
+                                                ? styles.active_link
+                                                : ""
+                                        }`}
+                                    >
                                         Batches
                                     </Link>
                                 </li>

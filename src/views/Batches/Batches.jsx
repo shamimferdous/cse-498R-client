@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
 import Loader from "../../components/Loader/Loader";
 
-const Products = () => {
+const Batches = () => {
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([
         {
@@ -21,18 +21,6 @@ const Products = () => {
         },
     ]);
 
-    const handleDeleteProduct = (id) => {
-        Modal.confirm({
-            title: "Do you Want to delete these items?",
-            icon: <ExclamationCircleFilled />,
-            content: "You will not be able to recover this product!",
-            async onOk() {
-                console.log("OK");
-            },
-            okText: "Yes, Delete",
-        });
-    };
-
     return (
         <Layout>
             <Card
@@ -41,12 +29,7 @@ const Products = () => {
                 }}
             >
                 <div className="d-flex justify-content-between align-items-center px-4 py-3">
-                    <h3 className="mb-0">Products</h3>
-                    <Link to="/create-product">
-                        <Button type="primary" icon={<PlusOutlined />}>
-                            Create Product
-                        </Button>
-                    </Link>
+                    <h3 className="mb-0">Batches</h3>
                 </div>
             </Card>
             <div className="mt-4" />
@@ -84,23 +67,9 @@ const Products = () => {
                             title: "Actions",
                             dataIndex: "actions",
                             key: "actions",
-                            render: (_, record) => (
+                            render: () => (
                                 <div className="d-flex gap-3">
-                                    <Link to={`/edit-product/${record.id}`}>
-                                        <Button type="primary">Edit</Button>
-                                    </Link>
-                                    <Button
-                                        type="primary"
-                                        danger
-                                        onClick={() => {
-                                            handleDeleteProduct(record.id);
-                                        }}
-                                    >
-                                        Delete
-                                    </Button>
-                                    <Link to={`/create-batch/${record.id}`}>
-                                        <Button type="dashed">Create Batch</Button>
-                                    </Link>
+                                    <Button type="primary">See Details</Button>
                                 </div>
                             ),
                         },
@@ -112,4 +81,4 @@ const Products = () => {
     );
 };
 
-export default Products;
+export default Batches;
