@@ -1,33 +1,49 @@
 import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Modal, Table } from "antd";
+import { Button, Card, Modal, Table, message } from "antd";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
 import Loader from "../../components/Loader/Loader";
+import axios from "../../config/axios";
 
 const Products = () => {
-    const [loading, setLoading] = useState(false);
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            name: "Mobile 1 5W-30",
-            sku: "MB1XXYYZZ1",
-            attr: '"[\\n  {\\n    \\"name\\": \\"Grade\\",\\n    \\"value\\": \\"5W-30\\"\\n  },\\n  {\\n    \\"name\\": \\"Qty\\",\\n    \\"value\\": \\"4 Ltr\\"\\n  },\\n  ]"',
-            dynamic_p_id: "68f019ce-89c8-4ecc-ae64-b26dcf2077b0",
-            created_at: "2023-05-29T19:06:45.047996Z",
-            modified_at: "2023-05-29T19:06:45.048523Z",
-            user: 3,
-        },
-    ]);
+    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState([]);
+    const [refresh, setRefresh] = useState(0);
 
+    // get all products
+    useEffect(() => {
+        (async () => {
+            try {
+                const response = await axios.get("/products", {
+                    withCredentials: true,
+                });
+                setProducts(response.data);
+            } catch (error) {
+                setProducts([]);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, [refresh]);
+
+    // delete product
     const handleDeleteProduct = (id) => {
         Modal.confirm({
             title: "Do you Want to delete these items?",
             icon: <ExclamationCircleFilled />,
             content: "You will not be able to recover this product!",
             async onOk() {
-                console.log("OK");
+                try {
+                    await axios.delete(`/products/${id}`, {
+                        withCredentials: true,
+                    });
+                    message.success("Product deleted successfully!");
+                    setRefresh((prev) => prev + 1);
+                } catch (error) {
+                    message.error("Could not delete product! Please try again.");
+                }
             },
             okText: "Yes, Delete",
         });

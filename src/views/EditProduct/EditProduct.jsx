@@ -1,11 +1,44 @@
-import { Button, Card, Col, Form, Input, Row, Space } from "antd";
-import { Link, useParams } from "react-router-dom";
+import { MinusCircleOutlined, PlusOutlined, RollbackOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Form, Input, Row, Space, message } from "antd";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
-import { RollbackOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import axios from "../../config/axios";
 
 const EditProduct = () => {
-    // get id prom params
     const { id } = useParams();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [product, setProduct] = useState({
+        id: 5,
+        name: "Mobile 1 5W-30",
+        sku: "MB1XXYYZZ1",
+        attr: '[{"name":"Grade","value":"5W-35"},{"name":"Qty","value":"5 Litre"}]',
+        dynamic_p_id: "54868e21-bf83-4581-9d5c-fa483dac14b7",
+        created_at: "2023-06-01T18:36:46.802631Z",
+        modified_at: "2023-06-01T18:49:59.561450Z",
+        user: 4,
+    });
+
+    const handleUpdateProduct = async (values) => {
+        if (!values.attr || values.attr.length === 0) return message.error("Please add at least one attribute!");
+        try {
+            // convert attr to string
+            values.attr = JSON.stringify(values.attr);
+
+            // request to create product
+            setLoading(true);
+            await axios.patch(`/products/${id}`, values, {
+                withCredentials: true,
+            });
+            message.success("Product updated successfully!");
+            navigate("/");
+        } catch (error) {
+            message.error(error.response.data || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Layout>
@@ -32,8 +65,13 @@ const EditProduct = () => {
                 <Form
                     layout="vertical"
                     requiredMark={false}
-                    onFinish={(values) => console.log(values)}
+                    onFinish={handleUpdateProduct}
                     autoComplete="off"
+                    initialValues={{
+                        name: product.name,
+                        sku: product.sku,
+                        attr: JSON.parse(product.attr),
+                    }}
                 >
                     <Row gutter={[20, 0]}>
                         <Col lg={12} xs={24}>
@@ -125,8 +163,15 @@ const EditProduct = () => {
                         <Col lg={12} xs={0}></Col>
                         <Col lg={6} xs={24}>
                             <Form.Item>
-                                <Button type="primary" htmlType="submit" size="large" block>
-                                    Submit
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    size="large"
+                                    block
+                                    loading={loading}
+                                    disabled={loading}
+                                >
+                                    Update Product
                                 </Button>
                             </Form.Item>
                         </Col>

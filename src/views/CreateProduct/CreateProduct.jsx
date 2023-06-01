@@ -1,9 +1,34 @@
-import { Button, Card, Col, Form, Input, Row, Space } from "antd";
-import { Link } from "react-router-dom";
+import { MinusCircleOutlined, PlusOutlined, RollbackOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Form, Input, Row, Space, message } from "antd";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
-import { RollbackOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import axios from "../../config/axios";
 
 const CreateProduct = () => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
+    const handleCreateProduct = async (values) => {
+        if (!values.attr || values.attr.length === 0) return message.error("Please add at least one attribute!");
+        try {
+            // convert attr to string
+            values.attr = JSON.stringify(values.attr);
+
+            // request to create product
+            setLoading(true);
+            await axios.post("/products", values, {
+                withCredentials: true,
+            });
+            message.success("Product created successfully!");
+            navigate("/");
+        } catch (error) {
+            message.error(error.response.data || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <Layout>
             <Card
@@ -26,12 +51,7 @@ const CreateProduct = () => {
                     padding: 15,
                 }}
             >
-                <Form
-                    layout="vertical"
-                    requiredMark={false}
-                    onFinish={(values) => console.log(values)}
-                    autoComplete="off"
-                >
+                <Form layout="vertical" requiredMark={false} onFinish={handleCreateProduct} autoComplete="off">
                     <Row gutter={[20, 0]}>
                         <Col lg={12} xs={24}>
                             <Form.Item
@@ -59,7 +79,7 @@ const CreateProduct = () => {
                                     },
                                 ]}
                             >
-                                <Input size="large"/>
+                                <Input size="large" />
                             </Form.Item>
                         </Col>
 
@@ -99,13 +119,19 @@ const CreateProduct = () => {
                                                         },
                                                     ]}
                                                 >
-                                                    <Input placeholder="Attribute Value" size="large"/>
+                                                    <Input placeholder="Attribute Value" size="large" />
                                                 </Form.Item>
                                                 <MinusCircleOutlined className="fs-2" onClick={() => remove(name)} />
                                             </Space>
                                         ))}
                                         <Form.Item>
-                                            <Button type="dashed" size="large" onClick={() => add()} block icon={<PlusOutlined />}>
+                                            <Button
+                                                type="dashed"
+                                                size="large"
+                                                onClick={() => add()}
+                                                block
+                                                icon={<PlusOutlined />}
+                                            >
                                                 Add field
                                             </Button>
                                         </Form.Item>
@@ -116,8 +142,15 @@ const CreateProduct = () => {
                         <Col lg={12} xs={0}></Col>
                         <Col lg={6} xs={24}>
                             <Form.Item>
-                                <Button type="primary" htmlType="submit" size="large" block>
-                                    Submit
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    size="large"
+                                    block
+                                    loading={loading}
+                                    disabled={loading}
+                                >
+                                    Create Product
                                 </Button>
                             </Form.Item>
                         </Col>
