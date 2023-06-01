@@ -1,6 +1,9 @@
-import { Button, Carousel, Checkbox, Col, Form, Input, Row } from "antd";
+import { Button, Carousel, Checkbox, Col, Form, Input, Row, message } from "antd";
 import styles from "./Login.module.scss";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import axios from "../../config/axios";
+import { AuthContext } from "../../context/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [loading, setLoading] = useState({
@@ -8,6 +11,8 @@ const Login = () => {
         register: false,
     });
     const [activeView, setActiveView] = useState("login");
+    const { setIsAuthenticated, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const slider_data = [
         {
@@ -27,12 +32,36 @@ const Login = () => {
         },
     ];
 
-    const handleLogin = (values) => {
-        console.log("Success:", values);
+    const handleLogin = async (values) => {
+        try {
+            setLoading({ ...loading, login: true });
+            const response = await axios.post(`/users/login`, values);
+            message.success("Login Successful");
+            window.localStorage.setItem("access_token", response.data.access_token);
+            setIsAuthenticated(true);
+            setUser(response.data.user);
+            navigate("/");
+        } catch (error) {
+            message.error("Invalid Email or Password");
+        } finally {
+            setLoading({ ...loading, login: false });
+        }
     };
 
-    const handleRegister = (values) => {
-        console.log("Success:", values);
+    const handleRegister = async (values) => {
+        try {
+            setLoading({ ...loading, register: true });
+            const response = await axios.post(`/users/register`, values);
+            message.success("Registration Successful");
+            window.localStorage.setItem("access_token", response.data.access_token);
+            setIsAuthenticated(true);
+            setUser(response.data.user);
+            navigate("/");
+        } catch (error) {
+            message.error(error.response.data || "Something went wrong");
+        } finally {
+            setLoading({ ...loading, register: false });
+        }
     };
 
     return (
@@ -221,7 +250,12 @@ const Login = () => {
                             <Carousel autoplay>
                                 {slider_data.map((slider, index) => (
                                     <div className={styles.slider_item} key={index}>
-                                        <img className={styles.slider_image} src={slider.image} alt={index} />
+                                        <img
+                                            className={styles.slider_image}
+                                            src={slider.image}
+                                            alt={index}
+                                            loading="lazy"
+                                        />
                                         <h2 className={styles.slider_title}>{slider.title}</h2>
                                         <p className={styles.slider_subtitle}> {slider.subtitle} </p>
                                     </div>

@@ -1,9 +1,10 @@
+import { MinusCircleOutlined, PlusOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Button, Card, Col, DatePicker, Form, Input, Row, Space } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
-import { RollbackOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 
 const CreateBatch = () => {
+    const { id } = useParams();
     return (
         <Layout>
             <Card
@@ -32,7 +33,7 @@ const CreateBatch = () => {
                     onFinish={(values) => console.log(values)}
                     autoComplete="off"
                     initialValues={{
-                        product: 1,
+                        product: id,
                     }}
                 >
                     <Row gutter={[20, 0]}>

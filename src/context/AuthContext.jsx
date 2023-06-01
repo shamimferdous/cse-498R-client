@@ -24,13 +24,8 @@ const AuthProvider = ({ children }) => {
                 setIsAuthenticated(true);
                 setUser(response.data);
             } catch (error) {
-                // temporary
-                setIsAuthenticated(true);
-                setUser({
-                    id: 1,
-                    name: "John Doe",
-                    email: "john@gmail.com",
-                });
+                setIsAuthenticated(false);
+                setUser(null);
             } finally {
                 setLoading(false);
             }

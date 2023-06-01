@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:8000/api/v1/";
+const baseUrl = "https://baysed-lunchpad-exd93.ondigitalocean.app/api";
 
 //creating an axios instance with auth setup
 const axiosInstance = axios.create({

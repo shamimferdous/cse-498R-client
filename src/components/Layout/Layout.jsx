@@ -4,6 +4,11 @@ import styles from "./Layout.module.scss";
 
 const Layout = ({ children }) => {
     const location = useLocation();
+    const handleLogout = () => {
+        window.localStorage.removeItem("access_token");
+        window.location.href = "/login";
+    };
+
     return (
         <div className="container">
             <div className="row">
@@ -45,7 +50,7 @@ const Layout = ({ children }) => {
                                         Batches
                                     </Link>
                                 </li>
-                                <li className="list-inline-item">
+                                <li className="list-inline-item" onClick={handleLogout}>
                                     <span role="button" className="fw-bold">
                                         Logout
                                     </span>
