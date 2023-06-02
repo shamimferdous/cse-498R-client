@@ -1,25 +1,27 @@
-import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Modal, Table } from "antd";
+import { Button, Card, Table } from "antd";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
 import Loader from "../../components/Loader/Loader";
+import axios from "../../config/axios";
 
 const Batches = () => {
-    const [loading, setLoading] = useState(false);
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            name: "Mobile 1 5W-30",
-            sku: "MB1XXYYZZ1",
-            attr: '"[\\n  {\\n    \\"name\\": \\"Grade\\",\\n    \\"value\\": \\"5W-30\\"\\n  },\\n  {\\n    \\"name\\": \\"Qty\\",\\n    \\"value\\": \\"4 Ltr\\"\\n  },\\n  ]"',
-            dynamic_p_id: "68f019ce-89c8-4ecc-ae64-b26dcf2077b0",
-            created_at: "2023-05-29T19:06:45.047996Z",
-            modified_at: "2023-05-29T19:06:45.048523Z",
-            user: 3,
-        },
-    ]);
+    const [loading, setLoading] = useState(true);
+    const [batches, setBatches] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await axios.get("/products/batches", { withCredentials: true });
+                setBatches(res.data);
+            } catch (error) {
+                setBatches([]);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
 
     return (
         <Layout>
@@ -39,37 +41,64 @@ const Batches = () => {
                 </Card>
             ) : (
                 <Table
-                    dataSource={products}
+                    dataSource={batches}
                     bordered
                     columns={[
                         {
-                            title: "Date",
-                            dataIndex: "created_at",
-                            key: "created_at",
-                            render: (date) => dayjs(date).format("DD MMMM YYYY - hh:mm A"),
-                        },
-                        {
                             title: "ID",
-                            dataIndex: "dynamic_p_id",
-                            key: "dynamic_p_id",
+                            dataIndex: "id",
+                            key: "id",
                         },
                         {
-                            title: "Name",
-                            dataIndex: "name",
-                            key: "name",
+                            title: "Product",
+                            dataIndex: "product",
+                            key: "product",
+                            render: (product) => product.name,
                         },
                         {
-                            title: "SKU",
-                            dataIndex: "sku",
-                            key: "sku",
+                            title: "Production Date",
+                            dataIndex: "production_date",
+                            key: "production_date",
+                            render: (production_date) => dayjs(production_date).format("DD MMMM YYYY"),
+                        },
+                        {
+                            title: "Quantity",
+                            dataIndex: "qty",
+                            key: "qty",
+                        },
+                        {
+                            title: "QR Preview",
+                            dataIndex: "product_units",
+                            key: "product_units",
+                            render: (product_units) => (
+                                <div className="d-flex align-items-center gap-3">
+                                    {product_units.slice(0, 3).map((unit) => (
+                                        <img src={unit.qr_url} alt="qr_url" height={30} />
+                                    ))}
+                                    {product_units.length > 3 && (
+                                        <div
+                                            className="bg-secondary text-white rounded-2 px-3 d-flex justify-content-center align-items-center"
+                                            style={{
+                                                width: "auto",
+                                                height: 30,
+                                            }}
+                                        >
+                                            {" "}
+                                            +{product_units.length - 3}{" "} More
+                                        </div>
+                                    )}
+                                </div>
+                            ),
                         },
                         {
                             title: "Actions",
                             dataIndex: "actions",
                             key: "actions",
-                            render: () => (
+                            render: (_, record) => (
                                 <div className="d-flex gap-3">
-                                    <Button type="primary">See Details</Button>
+                                    <Link to={`/batches/${record.id}`}>
+                                        <Button type="primary">See Details</Button>
+                                    </Link>
                                 </div>
                             ),
                         },

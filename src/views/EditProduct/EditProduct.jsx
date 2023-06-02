@@ -1,25 +1,38 @@
 import { MinusCircleOutlined, PlusOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Button, Card, Col, Form, Input, Row, Space, message } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
 import axios from "../../config/axios";
+import Loader from "../../components/Loader/Loader";
 
 const EditProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [product, setProduct] = useState({
-        id: 5,
-        name: "Mobile 1 5W-30",
-        sku: "MB1XXYYZZ1",
-        attr: '[{"name":"Grade","value":"5W-35"},{"name":"Qty","value":"5 Litre"}]',
-        dynamic_p_id: "54868e21-bf83-4581-9d5c-fa483dac14b7",
-        created_at: "2023-06-01T18:36:46.802631Z",
-        modified_at: "2023-06-01T18:49:59.561450Z",
-        user: 4,
+    const [loading, setLoading] = useState({
+        update: false,
+        get: true,
     });
+    const [product, setProduct] = useState({});
 
+    // get product by id
+    useEffect(() => {
+        (async () => {
+            try {
+                const response = await axios.get(`/products/${id}`, {
+                    withCredentials: true,
+                });
+                setProduct(response.data);
+            } catch (error) {
+                message.error("Something went wrong!");
+                navigate("/");
+            } finally {
+                setLoading({ ...loading, get: false });
+            }
+        })();
+    }, []);
+
+    // handle product update
     const handleUpdateProduct = async (values) => {
         if (!values.attr || values.attr.length === 0) return message.error("Please add at least one attribute!");
         try {
@@ -27,7 +40,7 @@ const EditProduct = () => {
             values.attr = JSON.stringify(values.attr);
 
             // request to create product
-            setLoading(true);
+            setLoading({ ...loading, update: true });
             await axios.patch(`/products/${id}`, values, {
                 withCredentials: true,
             });
@@ -36,7 +49,7 @@ const EditProduct = () => {
         } catch (error) {
             message.error(error.response.data || "Something went wrong!");
         } finally {
-            setLoading(false);
+            setLoading({ ...loading, update: false });
         }
     };
 
@@ -62,121 +75,127 @@ const EditProduct = () => {
                     padding: 15,
                 }}
             >
-                <Form
-                    layout="vertical"
-                    requiredMark={false}
-                    onFinish={handleUpdateProduct}
-                    autoComplete="off"
-                    initialValues={{
-                        name: product.name,
-                        sku: product.sku,
-                        attr: JSON.parse(product.attr),
-                    }}
-                >
-                    <Row gutter={[20, 0]}>
-                        <Col lg={12} xs={24}>
-                            <Form.Item
-                                label="Name"
-                                name="name"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please input product name!",
-                                    },
-                                ]}
-                            >
-                                <Input size="large" />
-                            </Form.Item>
-                        </Col>
-
-                        <Col lg={12} xs={24}>
-                            <Form.Item
-                                label="SKU"
-                                name="sku"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please input product SKU!",
-                                    },
-                                ]}
-                            >
-                                <Input size="large" />
-                            </Form.Item>
-                        </Col>
-
-                        <Col lg={12} xs={24}>
-                            <div className="mb-2 ms-1">Attributes</div>
-                            <Form.List name="attr">
-                                {(fields, { add, remove }) => (
-                                    <>
-                                        {fields.map(({ key, name, ...restField }) => (
-                                            <Space
-                                                key={key}
-                                                style={{
-                                                    display: "flex",
-                                                    marginBottom: 8,
-                                                }}
-                                                align="baseline"
-                                            >
-                                                <Form.Item
-                                                    {...restField}
-                                                    name={[name, "name"]}
-                                                    rules={[
-                                                        {
-                                                            required: true,
-                                                            message: "Missing name",
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Input placeholder="Attribute Name" size="large" />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    {...restField}
-                                                    name={[name, "value"]}
-                                                    rules={[
-                                                        {
-                                                            required: true,
-                                                            message: "Missing value",
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Input placeholder="Attribute Value" size="large" />
-                                                </Form.Item>
-                                                <MinusCircleOutlined className="fs-2" onClick={() => remove(name)} />
-                                            </Space>
-                                        ))}
-                                        <Form.Item>
-                                            <Button
-                                                type="dashed"
-                                                size="large"
-                                                onClick={() => add()}
-                                                block
-                                                icon={<PlusOutlined />}
-                                            >
-                                                Add field
-                                            </Button>
-                                        </Form.Item>
-                                    </>
-                                )}
-                            </Form.List>
-                        </Col>
-                        <Col lg={12} xs={0}></Col>
-                        <Col lg={6} xs={24}>
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    block
-                                    loading={loading}
-                                    disabled={loading}
+                {loading.get ? (
+                    <Loader height={"60vh"} />
+                ) : (
+                    <Form
+                        layout="vertical"
+                        requiredMark={false}
+                        onFinish={handleUpdateProduct}
+                        autoComplete="off"
+                        initialValues={{
+                            ...product,
+                            attr: JSON.parse(product.attr),
+                        }}
+                    >
+                        <Row gutter={[20, 0]}>
+                            <Col lg={12} xs={24}>
+                                <Form.Item
+                                    label="Name"
+                                    name="name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please input product name!",
+                                        },
+                                    ]}
                                 >
-                                    Update Product
-                                </Button>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
+                                    <Input size="large" />
+                                </Form.Item>
+                            </Col>
+
+                            <Col lg={12} xs={24}>
+                                <Form.Item
+                                    label="SKU"
+                                    name="sku"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please input product SKU!",
+                                        },
+                                    ]}
+                                >
+                                    <Input size="large" />
+                                </Form.Item>
+                            </Col>
+
+                            <Col lg={12} xs={24}>
+                                <div className="mb-2 ms-1">Attributes</div>
+                                <Form.List name="attr">
+                                    {(fields, { add, remove }) => (
+                                        <>
+                                            {fields.map(({ key, name, ...restField }) => (
+                                                <Space
+                                                    key={key}
+                                                    style={{
+                                                        display: "flex",
+                                                        marginBottom: 8,
+                                                    }}
+                                                    align="baseline"
+                                                >
+                                                    <Form.Item
+                                                        {...restField}
+                                                        name={[name, "name"]}
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: "Missing name",
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="Attribute Name" size="large" />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        {...restField}
+                                                        name={[name, "value"]}
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: "Missing value",
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="Attribute Value" size="large" />
+                                                    </Form.Item>
+                                                    <MinusCircleOutlined
+                                                        className="fs-2"
+                                                        onClick={() => remove(name)}
+                                                    />
+                                                </Space>
+                                            ))}
+                                            <Form.Item>
+                                                <Button
+                                                    type="dashed"
+                                                    size="large"
+                                                    onClick={() => add()}
+                                                    block
+                                                    icon={<PlusOutlined />}
+                                                >
+                                                    Add field
+                                                </Button>
+                                            </Form.Item>
+                                        </>
+                                    )}
+                                </Form.List>
+                            </Col>
+                            <Col lg={12} xs={0}></Col>
+                            <Col lg={6} xs={24}>
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        block
+                                        loading={loading.update}
+                                        disabled={loading.update}
+                                    >
+                                        Update Product
+                                    </Button>
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
+                )}
             </Card>
         </Layout>
     );
