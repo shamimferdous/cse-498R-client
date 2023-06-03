@@ -12,40 +12,45 @@ import EditProduct from "./views/EditProduct/EditProduct.jsx";
 import CreateBatch from "./views/CreateBatch/CreateBatch.jsx";
 import Batches from "./views/Batches/Batches.jsx";
 import BatchListByProduct from "./views/BatchListByProduct/BatchListByProduct.jsx";
+import Scan from "./views/Scan/Scan.jsx";
 
 // create browser router and components here
 const router = createBrowserRouter([
     {
         path: "/login",
-        element: <Login />,
+        element: <Login/>,
     },
     {
-        element: <ProtectedRoute />,
-        errorElement: <Navigate to="/" replace />,
+        path: "/scan",
+        element: <Scan/>,
+    },
+    {
+        element: <ProtectedRoute/>,
+        errorElement: <Navigate to="/" replace/>,
         children: [
             {
                 path: "/",
-                element: <Products />,
+                element: <Products/>,
             },
             {
                 path: "/create-product",
-                element: <CreateProduct />,
+                element: <CreateProduct/>,
             },
             {
                 path: "/edit-product/:id",
-                element: <EditProduct />,
+                element: <EditProduct/>,
             },
             {
                 path: "/create-batch/:id",
-                element: <CreateBatch />,
+                element: <CreateBatch/>,
             },
             {
                 path: "/batches",
-                element: <Batches />,
+                element: <Batches/>,
             },
             {
                 path: "/batches/:id",
-                element: <BatchListByProduct />,
+                element: <BatchListByProduct/>,
             },
         ],
     },
@@ -61,7 +66,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                     },
                 }}
             >
-                <RouterProvider router={router} />
+                <RouterProvider router={router}/>
             </ConfigProvider>
         </AuthProvider>
     </React.StrictMode>
