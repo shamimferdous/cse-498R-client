@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const baseUrl = "https://baysed-lunchpad-exd93.ondigitalocean.app/api";
-const baseUrl = "http://127.0.0.1:8000/api";
+const baseUrl = "https://sea-lion-app-5bs7n.ondigitalocean.app/api";
+// const baseUrl = "http://127.0.0.1:8000/api";
 
 //creating an axios instance with auth setup
 const axiosInstance = axios.create({

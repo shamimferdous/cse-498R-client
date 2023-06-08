@@ -3,7 +3,7 @@ import styles from "./Login.module.scss";
 import { useContext, useState } from "react";
 import axios from "../../config/axios";
 import { AuthContext } from "../../context/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [loading, setLoading] = useState({

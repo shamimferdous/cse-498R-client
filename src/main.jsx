@@ -1,7 +1,7 @@
 import { ConfigProvider } from "antd";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Navigate, RouterProvider, createBrowserRouter, createHashRouter } from "react-router-dom";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import AuthProvider from "./context/AuthContext.jsx";
 import "./index.css";
@@ -13,6 +13,7 @@ import CreateBatch from "./views/CreateBatch/CreateBatch.jsx";
 import Batches from "./views/Batches/Batches.jsx";
 import BatchListByProduct from "./views/BatchListByProduct/BatchListByProduct.jsx";
 import Scan from "./views/Scan/Scan.jsx";
+import ScanV2 from "./views/Scan/ScanV2.jsx";
 
 // create browser router and components here
 const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
     {
         path: "/scan",
         element: <Scan/>,
+    },
+     {
+        path: "/scan-v2",
+        element: <ScanV2/>,
     },
     {
         element: <ProtectedRoute/>,
