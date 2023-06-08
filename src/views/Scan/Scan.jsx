@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { QrReader } from 'react-qr-reader';
 import axios from 'axios';
+import { message } from 'antd';
 
 const Scanner = () => {
   const [data, setData] = useState('No result');
@@ -16,7 +17,16 @@ const Scanner = () => {
 
     const image = canvas.toDataURL('image/jpeg');
     console.log(image);
-    // setImageData(image);
+    const formData = new FormData();
+    formData.append('image', image);
+
+    axios.post('http://206.81.27.156:8000/api/scanner/scan', formData).then(response => {
+      console.log(response.data);
+      message.info(response.data.original ? 'OG' : 'Not Detected')
+    }).catch(error => {
+      console.log(error.response);
+    });
+
   };
 
   return (
